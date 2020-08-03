@@ -1,6 +1,7 @@
 import { CRUDModel } from "../interfaces/db";
 import { User } from "../dtos/user";
 import { MySQLConnection } from "./db";
+import { Todo } from "../dtos/todo";
 
 
 export class UserModel<User> implements CRUDModel<User> {
@@ -13,7 +14,7 @@ export class UserModel<User> implements CRUDModel<User> {
 
         
         if (!user) {
-            return await this.conn.runQuery('SELECT * FROM users where ? ' , user) as User[]
+            return await this.conn.runQuery('SELECT * FROM users WHERE ? ' , user) as User[]
         }
         
         return await this.conn.runQuery('SELECT * FROM users ') as User[]
@@ -34,4 +35,10 @@ export class UserModel<User> implements CRUDModel<User> {
     async delete(userFilter : Partial<User>) { 
         await this.conn.runQuery('DELETE users  WHERE ? ' ,  userFilter)
     }
+
+    async findTodos(userId : number ) : Promise<Todo[]> {
+    
+        return this.conn.runQuery('SELECT * from todos WHERE user_id = ? ' , userId)
+    }
+    
 }
