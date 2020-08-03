@@ -21,7 +21,7 @@ export class UserController implements APPRouter {
     }
 
     getUser(req : Request , res : Response) {
-
+       
     }
 
     getUsers(req : Request , res : Response) {

@@ -16,6 +16,7 @@ export class APPServer {
         this.config.apps.forEach(router => router.setup(this.app))
     }
     run() {
+        this.setup()
         this.app.listen(this.config.port)
     }
 }
