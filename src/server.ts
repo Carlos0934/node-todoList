@@ -8,12 +8,11 @@ export class APPServer {
     constructor(private config : APPServerProps) {
         
         this.app = express()
-    
-        
+
     }
 
     setup() {
-        
+        this.config.middlewares.forEach(middleware => this.app.use(middleware.path , middleware.handler))
         this.config.apps.forEach(router => router.setup(this.app))
     }
     run() {

@@ -1,10 +1,17 @@
 import dotenv from 'dotenv'
+import { APPServer } from './server'
 
 
 
 function main() {
     dotenv.config()
-    console.log(process.env.PORT)
+    const app = new APPServer({
+        port : process.env.PORT || 3000,
+        apps : [],
+        middlewares : [],
+    })
+
+    app.run()
 }
 
 main()
