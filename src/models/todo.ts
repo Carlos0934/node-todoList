@@ -2,7 +2,7 @@ import { CRUDModel } from "../interfaces/db";
 import {Todo} from '../dtos/todo'
 import { MySQLConnection } from "./db";
 
-export class TodoModel<Todo> implements CRUDModel<Todo> {
+export class TodoModel implements CRUDModel<Todo> {
 
 
     constructor(private conn : MySQLConnection) {
