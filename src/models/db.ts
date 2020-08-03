@@ -16,10 +16,14 @@ export class MySQLConnection implements DBConnection   {
     }
 
     async runQuery(query : string , ...params : any[] ) : Promise<any> {
+        try {
+            const  [rows, fields ] =  await this.conn.query(query, params)
+            return rows
+        } catch (error) {
+            this.conn.end()
+        }
+      
         
-        const  [rows, fields ] =  await this.conn.query(query, params)
-
-        return rows
     }
     
 }

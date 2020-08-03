@@ -18,7 +18,7 @@ export type PartialMap<T> = {
 
 export interface CRUDModel<T> {
     find( filter? :  PartialMap<T> ) : Promise<T[]>
-    create() : Promise<void>
+    create(data : T) : Promise<void>
     update(filter : PartialMap<T> , data : T) : Promise<T>
     delete(filter : PartialMap<T> ) : Promise<void>
 }
