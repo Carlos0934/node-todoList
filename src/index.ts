@@ -7,6 +7,10 @@ import { UserController } from './controllers/userController'
 import { TodoController } from './controllers/todoController'
 import express from 'express'
 import { PasswordEncrypt } from './utils/encrypt'
+import { AuthController } from './controllers/authController'
+import { JWT } from './utils/jwt'
+import { User } from './dtos/user'
+import { AuthMiddleware } from './middlewares/authMiddleware'
 
 function getMysqlConn() : MySQLConnection {
     const env = process.env
@@ -29,17 +33,21 @@ async function main() {
 
     const userModel = new UserModel(mysqlConn , chipher)
     const todoModel = new TodoModel(mysqlConn)
+    const jwt = new JWT<User>(process.env.SECRET_KEY || 'test')
+    const authMiddleware = new AuthMiddleware(userModel , jwt)
 
     const app = new APPServer({
         port : process.env.PORT || 3000,
         apps : [
-            new UserController(userModel),
-            new TodoController(todoModel)
+            new UserController(userModel , authMiddleware),
+            new TodoController(todoModel),
+            new AuthController(userModel , jwt )
         ],
         middlewares : [
             {
                 handler : express.json(),
-            }
+            },
+            
         ],
     })
 

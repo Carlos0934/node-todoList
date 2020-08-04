@@ -1,24 +1,32 @@
 import { APPRouter } from "../interfaces/server";
-import { Application } from "express";
+import { Application, Router } from "express";
 import { UserModel } from "../models/user";
 import {Request, Response} from 'express'
 import { OneWayEncrypter } from "../interfaces/utils";
+import { AuthMiddleware } from "../middlewares/authMiddleware";
 
 export class UserController implements APPRouter {
 
-    constructor (private userModel : UserModel   ) {
+    constructor (private userModel : UserModel , private authMiddleware : AuthMiddleware   ) {
         
     }
     setup(app : Application) {
         
-        app.route('/api/users')
-            .get(this.getUsers.bind(this))
-            .post(this.createUser.bind(this))
-            
-        app.route('/api/users/:user')
+        const router = Router()
+        router.use(this.authMiddleware.isAuthenticated.bind(this.authMiddleware))
+        router.get( '/',this.getUsers.bind(this))
+        router.post('/', this.createUser.bind(this))
+           
+        
+
+        router.use('/:user' ,  this.authMiddleware.isAuthorized.bind(this.authMiddleware))  
+        router.route('/:user')
             .get(this.getUser.bind(this))
             .put(this.updateUser.bind(this))
-            .delete(this.deleteUser.bind(this))   
+            .delete(this.deleteUser.bind(this))
+
+        app.use('/api/users' , router)
+        
     }
 
     async getUser(req : Request , res : Response) {

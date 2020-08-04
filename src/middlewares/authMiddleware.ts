@@ -9,7 +9,7 @@ export class AuthMiddleware {
         
     }
     
-    getUserByToken(req : Request) : User | undefined {
+    private getUserByToken(req : Request) : User | undefined {
         const authHeader = req.headers['authorization']
         if (authHeader) {
            
