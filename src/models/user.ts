@@ -41,9 +41,6 @@ export class UserModel implements CRUDModel<User> {
         await this.conn.runQuery('DELETE users  WHERE ? ' ,  userFilter)
     }
 
-    async findTodos(userId : number ) : Promise<Todo[]> {
     
-        return this.conn.runQuery('SELECT * from todos WHERE user_id = ? ' , userId)
-    }
     
 }

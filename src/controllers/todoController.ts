@@ -12,19 +12,27 @@ export class TodoController implements APPRouter {
         
         const router = Router()
 
-        
-        
-        router.route('/api/todos')
-            .post(this.createTodo)
+        router.route('/')
+            .get(this.getTodo.bind(this))
+            .post(this.createTodo.bind(this))
             
-        router.route('/api/todos/:todo')
-            .put(this.updateTodo)
-            .delete(this.deleteTodo)
+            
+        router.route('/:todo')
+            .get(this.getTodo.bind(this))
+            .put(this.updateTodo.bind(this))
+            .delete(this.deleteTodo.bind(this))
 
-        app.use(router)
+        app.use( '/api/todos' , router)
     }
 
-  
+    
+    getAllTodos(req : Request , res : Response) {
+        
+    }
+
+    getTodo(req : Request , res : Response) {
+
+    }
     createTodo(req : Request , res : Response) {
 
     }

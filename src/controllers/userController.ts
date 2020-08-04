@@ -14,8 +14,9 @@ export class UserController implements APPRouter {
         
         const router = Router()
         router.use(this.authMiddleware.isAuthenticated.bind(this.authMiddleware))
-        router.get( '/',this.getUsers.bind(this))
-        router.post('/', this.createUser.bind(this))
+        router.route('/')
+            .get(this.getUsers.bind(this))
+            .post( this.createUser.bind(this))
            
         
 
