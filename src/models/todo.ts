@@ -9,16 +9,25 @@ export class TodoModel implements CRUDModel<Todo> {
 
     }
 
-    async find(todo? : Partial<Todo>) {
+    async find(todo : Partial<Todo>) {
 
         
-        if (!todo) {
-            return await this.conn.runQuery('SELECT * FROM todos WHERE ? ' , todo) as Todo[]
+        if(todo.userId) {
+            
+            return await this.conn.runQuery('SELECT * FROM todos WHERE userId = ? ' , todo.userId) as Todo[]
+            
         }
-        
-        return await this.conn.runQuery('SELECT * FROM todos ') as Todo[]
+            return []
+       
     } 
 
+    async findOne(todo : Partial<Todo>) {
+        if (todo.id && todo.userId) {
+            return (await this.conn.runQuery('SELECT * FROM todos WHERE id = ? AND userId = ? ' , todo.id , todo.userId))[0] as Todo
+        }
+        
+        
+    }
     async create(todo : Todo) {
         await this.conn.runQuery('INSERT INTO todos SET ?' , todo)
     }
@@ -32,6 +41,6 @@ export class TodoModel implements CRUDModel<Todo> {
     }
 
     async delete(todoFilter : Partial<Todo>) { 
-        await this.conn.runQuery('DELETE todos  WHERE ? ' ,  todoFilter)
+        await this.conn.runQuery('DELETE FROM todos  WHERE id = ? ' ,  todoFilter.id)
     }
 }

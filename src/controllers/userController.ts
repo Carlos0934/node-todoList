@@ -19,13 +19,13 @@ export class UserController implements APPRouter {
         router.post('/', this.createUser.bind(this))
 
         router.use(this.authMiddleware.isAuthenticated.bind(this.authMiddleware))
-        router.use('/' , this.getUsers.bind(this))
+        router.get('/' , this.getUsers.bind(this))
         router.get('/:user', this.getUser.bind(this))
         
         
         
         
-        router.use('/:user' ,  this.authMiddleware.isAuthorized.bind(this.authMiddleware))  
+        router.use('/:user',this.authMiddleware.isAuthorized.bind(this.authMiddleware))
         router.route('/:user')
             .put(this.updateUser.bind(this))
             .delete(this.deleteUser.bind(this))
@@ -45,7 +45,7 @@ export class UserController implements APPRouter {
                     res.status(404).json({
                         message : 'User not found'
                     })
-
+               
                 res.status(200).json(user)
 
             } catch (error) {

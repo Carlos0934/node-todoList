@@ -40,7 +40,7 @@ async function main() {
         port : process.env.PORT || 3000,
         apps : [
             new UserController(userModel , authMiddleware),
-            new TodoController(todoModel),
+            new TodoController(todoModel , authMiddleware),
             new AuthController(userModel , jwt )
         ],
         middlewares : [

@@ -35,12 +35,12 @@ export class AuthMiddleware {
 
     async isAuthorized(req : Request, res : Response , next : NextFunction) {
         const user = this.getUserByToken(req)
-        const id = Number(req.params['users'])
-        
+        const id = Number(req.params['user'])
+       
         if (user &&  !Number.isNaN(id)) {
-            const verifiedUser = (await this.userModel.find(user))[0]
-
-            if (verifiedUser) {
+            const verifiedUser = (await this.userModel.findOne(user))
+           
+            if (verifiedUser && id === verifiedUser.id) {
                 next()
                 return 
             }

@@ -5,7 +5,7 @@ export interface Todo {
     title : string
     description : string
     createdAt : string
-    isComplete : boolean
+    isCompleted : boolean
 
 }
 

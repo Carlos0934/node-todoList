@@ -4,12 +4,13 @@ import { TodoModel } from "../models/todo";
 import {Request, Response} from 'express'
 import { User } from "../dtos/user";
 import { GetterRequestID , RequestIDFunction } from "../utils/http";
+import { AuthMiddleware } from "../middlewares/authMiddleware";
 
 export class TodoController implements APPRouter {
 
     private getUserID  : RequestIDFunction
     private getTodoID : RequestIDFunction
-    constructor (private todoModel : TodoModel  ) {
+    constructor (private todoModel : TodoModel , private auth : AuthMiddleware  ) {
         this.getUserID = GetterRequestID('user')
         this.getTodoID = GetterRequestID('todo')
 
@@ -17,18 +18,20 @@ export class TodoController implements APPRouter {
     setup(app : Application) {
         
         const router = Router()
-
-        router.route('/')
-            .get(this.getTodo.bind(this))
+        // this path not is defined in app.use() because the handler not would get user id  
+        router.use('/:user/todos',this.auth.isAuthorized.bind(this.auth))
+        
+        router.route('/:user/todos')
+            .get(this.getAllTodos.bind(this))
             .post(this.createTodo.bind(this))
             
             
-        router.route('/:todo')
+        router.route('/:user/todos/:todo')
             .get(this.getTodo.bind(this))
             .put(this.updateTodo.bind(this))
             .delete(this.deleteTodo.bind(this))
 
-        app.use( '/api/users/:user/todos' , router)
+        app.use( '/api/users' , router)
     }
 
     
@@ -37,11 +40,13 @@ export class TodoController implements APPRouter {
 
     async getAllTodos(req : Request , res : Response) {
         try {
+            
             const userId = this.getUserID(req)
+            
             const todos =  await this.todoModel.find({
                 userId
             })
-
+           
             res.status(200).json(todos)
         } catch (error) {
             
@@ -54,11 +59,18 @@ export class TodoController implements APPRouter {
     async getTodo(req : Request , res : Response) {
         try {
             const todoId = this.getTodoID(req)
-            const todos = await this.todoModel.find({
-                id : todoId
+            const userId = this.getUserID(req)
+            const todo = await this.todoModel.findOne({
+                id : todoId,
+                userId : userId 
             })
 
-            res.status(200).json(todos)
+            if(todo) {
+                res.status(200).json(todo)
+            } else {
+                res.status(404).json({})
+            }
+           
         } catch (error) {
             
             res.status(500).json({
@@ -69,7 +81,12 @@ export class TodoController implements APPRouter {
     
     async createTodo(req : Request , res : Response) {
         try {
-            await this.todoModel.create(req.body)
+            const userId = this.getUserID(req)
+            await this.todoModel.create({
+                ...req.body,
+                userId : userId
+
+            })
             res.status(201).json({
                 message : 'Todo successfully created'
             })
