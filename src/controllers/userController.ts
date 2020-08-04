@@ -2,7 +2,7 @@ import { APPRouter } from "../interfaces/server";
 import { Application, Router } from "express";
 import { UserModel } from "../models/user";
 import {Request, Response} from 'express'
-import { OneWayEncrypter } from "../interfaces/utils";
+
 import { AuthMiddleware } from "../middlewares/authMiddleware";
 
 export class UserController implements APPRouter {
@@ -13,16 +13,17 @@ export class UserController implements APPRouter {
     setup(app : Application) {
         
         const router = Router()
-        router.use(this.authMiddleware.isAuthenticated.bind(this.authMiddleware))
-        router.route('/')
-            .get(this.getUsers.bind(this))
-            .post( this.createUser.bind(this))
-           
-        
+        router.post('/', this.createUser.bind(this))
 
+        router.use(this.authMiddleware.isAuthenticated.bind(this.authMiddleware))
+        router.use('/' , this.getUsers.bind(this))
+        router.get('/:user', this.getUser.bind(this))
+        
+        
+        
+        
         router.use('/:user' ,  this.authMiddleware.isAuthorized.bind(this.authMiddleware))  
         router.route('/:user')
-            .get(this.getUser.bind(this))
             .put(this.updateUser.bind(this))
             .delete(this.deleteUser.bind(this))
 
