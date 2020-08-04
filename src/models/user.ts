@@ -2,12 +2,13 @@ import { CRUDModel } from "../interfaces/db";
 import { User } from "../dtos/user";
 import { MySQLConnection } from "./db";
 import { Todo } from "../dtos/todo";
+import { OneWayEncrypter } from "../interfaces/utils";
 
 
 export class UserModel implements CRUDModel<User> {
 
     
-    constructor(private conn : MySQLConnection) {
+    constructor(private conn : MySQLConnection , private chipher : OneWayEncrypter) {
 
     }
     async find(user? : Partial<User>) {
@@ -21,11 +22,15 @@ export class UserModel implements CRUDModel<User> {
     } 
 
     async create(user : User) {
+        user.password = this.chipher.encrypt(user.password)
         await this.conn.runQuery('INSERT INTO users SET ?' , user)
     }
 
-    async update(  user : User , userFilter : Partial<User>) {
-       
+    async update(  user : Partial<User> , userFilter : Partial<User>) {
+        
+        if(user.password) {
+            user.password = this.chipher.encrypt(user.password)
+        }
         await this.conn.runQuery('UPDATE users SET ? WHERE ? ' , user , userFilter)
 
         return (await this.find(userFilter))[0]

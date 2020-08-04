@@ -6,6 +6,7 @@ import { TodoModel } from './models/todo'
 import { UserController } from './controllers/userController'
 import { TodoController } from './controllers/todoController'
 import express from 'express'
+import { PasswordEncrypt } from './utils/encrypt'
 
 function getMysqlConn() : MySQLConnection {
     const env = process.env
@@ -24,8 +25,9 @@ async function main() {
     dotenv.config()
    
     const mysqlConn = getMysqlConn()
+    const chipher = new PasswordEncrypt()
 
-    const userModel = new UserModel(mysqlConn)
+    const userModel = new UserModel(mysqlConn , chipher)
     const todoModel = new TodoModel(mysqlConn)
 
     const app = new APPServer({

@@ -2,10 +2,11 @@ import { APPRouter } from "../interfaces/server";
 import { Application } from "express";
 import { UserModel } from "../models/user";
 import {Request, Response} from 'express'
+import { OneWayEncrypter } from "../interfaces/utils";
 
 export class UserController implements APPRouter {
 
-    constructor (private userModel : UserModel  ) {
+    constructor (private userModel : UserModel   ) {
         
     }
     setup(app : Application) {
