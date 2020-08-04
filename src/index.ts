@@ -5,7 +5,7 @@ import { UserModel } from './models/user'
 import { TodoModel } from './models/todo'
 import { UserController } from './controllers/userController'
 import { TodoController } from './controllers/todoController'
-
+import express from 'express'
 
 function getMysqlConn() : MySQLConnection {
     const env = process.env
@@ -20,7 +20,7 @@ function getMysqlConn() : MySQLConnection {
     return mysqlConn
 }
 
-function main() {
+async function main() {
     dotenv.config()
    
     const mysqlConn = getMysqlConn()
@@ -34,10 +34,14 @@ function main() {
             new UserController(userModel),
             new TodoController(todoModel)
         ],
-        middlewares : [],
+        middlewares : [
+            {
+                handler : express.json(),
+            }
+        ],
     })
 
-   
+    
     app.run()
 }
 

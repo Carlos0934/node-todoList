@@ -11,32 +11,98 @@ export class UserController implements APPRouter {
     setup(app : Application) {
         
         app.route('/api/users')
-            .get(this.getUsers)
-            .post(this.createUser)
+            .get(this.getUsers.bind(this))
+            .post(this.createUser.bind(this))
             
         app.route('/api/users/:user')
-            .get(this.getUser)
-            .put(this.updateUser)
-            .delete(this.deleteUser)   
+            .get(this.getUser.bind(this))
+            .put(this.updateUser.bind(this))
+            .delete(this.deleteUser.bind(this))   
     }
 
-    getUser(req : Request , res : Response) {
-       
+    async getUser(req : Request , res : Response) {
+            try {
+                const user = (await this.userModel.find({
+                    id : Number(req.params['user'])
+                }))[0]
+                
+               
+                if(!user)
+                    res.status(404).json({
+                        message : 'User not found'
+                    })
+
+                res.status(200).json(user)
+
+            } catch (error) {
+                res.status(500).json({
+                    message : 'Error to try get user'
+                })
+            }
     }
 
-    getUsers(req : Request , res : Response) {
-
+    async getUsers(req : Request , res : Response) {
+        
+        try {
+            const users = await this.userModel.find()
+            res.status(200).json(users)
+        } catch (error) {
+            res.status(500).json({
+                message : 'Error to try get users'
+            })
+        }
+      
     }
-    createUser(req : Request , res : Response) {
-
+    async createUser(req : Request , res : Response) {
+        try {
+            
+            await this.userModel.create(req.body)
+            res.status(201).json({
+                message : 'User successfully created'
+            })
+        } catch (error) {
+           
+            res.status(500).json({
+                message : 'Error to try create users'
+            })
+        }
+      
     }
 
-    updateUser(req : Request , res : Response) {
-
+    async updateUser(req : Request , res : Response) {
+        try {
+            
+            await this.userModel.update(req.body , {
+                id : Number(req.params['user'])
+            })
+            res.status(200).json({
+                message : 'User successfully updated'
+            })
+        } catch (error) {
+           
+            res.status(500).json({
+                message : 'Error to try updated users'
+            })
+        }
+      
     }
 
-    deleteUser(req : Request , res : Response) {
+    async deleteUser(req : Request , res : Response) {
+        try {
+           await this.userModel.delete({
+                id : Number(req.params['user'])
+            })
+            
 
+            res.status(200).json({
+                message : 'User successfully deleted'
+            })
+
+        } catch (error) {
+            res.status(500).json({
+                message : 'Error to try delete user'
+            })
+        }
     }
 
 }

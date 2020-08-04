@@ -12,7 +12,7 @@ export class APPServer {
     }
 
     setup() {
-        this.config.middlewares.forEach(middleware => this.app.use(middleware.path , middleware.handler))
+        this.config.middlewares.forEach(middleware => this.app.use(middleware.path || '' , middleware.handler))
         this.config.apps.forEach(router => router.setup(this.app))
     }
     run() {

@@ -8,7 +8,7 @@ export interface APPRouter {
 
 export interface APPMiddleware {
     handler : RequestHandler
-    path : string | ''
+    path? : string 
 }
 export interface APPServerProps {
     port : number | string
