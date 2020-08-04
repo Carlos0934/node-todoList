@@ -1,17 +1,59 @@
 import {Request , NextFunction , Response} from 'express'
 import { UserModel } from '../models/user';
+import { JWT } from '../utils/jwt';
+import { User } from '../dtos/user';
 
 export class AuthMiddleware {
 
-    constructor(userModel : UserModel , key : string) {
+    constructor( private userModel : UserModel , private jwt : JWT<User>) {
         
     }
     
+    getUserByToken(req : Request) : User | undefined {
+        const authHeader = req.headers['authorization']
+        if (authHeader) {
+           
+            const token = authHeader.split(' ')[1]
+            return this.jwt.verify(token)
+        }
+
+        return undefined
+    }
     isAuthenticated(req : Request, res : Response , next : NextFunction) {
+        
+        
+        if(this.getUserByToken(req))  {
+            
+            next()
+            return 
+        }
+        res.status(401).json({
+            message : "Unauthenticated, you are anonymous user"
+        })
 
     }
 
-    isAuthorized(req : Request, res : Response , next : NextFunction) {
+    async isAuthorized(req : Request, res : Response , next : NextFunction) {
+        const user = this.getUserByToken(req)
+        const id = Number(req.params['users'])
+        
+        if (user &&  !Number.isNaN(id)) {
+            const verifiedUser = (await this.userModel.find(user))[0]
+
+            if (verifiedUser) {
+                next()
+                return 
+            }
+            
+            res.status(401).json({
+                message : "Unauthorized"
+            })
+
+        } else {
+            res.status(401).json({
+                message : "Invalid token"
+            })
+        }
 
     }
 }

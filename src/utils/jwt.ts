@@ -1,6 +1,6 @@
 import {sign , verify, } from 'jsonwebtoken'
-import {readFileSync} from 'fs'
-class JWT<T extends object | string>  {
+
+export class JWT<T extends object | string>  {
     constructor(private privateKey : string  ) {
         
     }
