@@ -4,11 +4,14 @@ import { UserModel } from "../models/user";
 import {Request, Response} from 'express'
 
 import { AuthMiddleware } from "../middlewares/authMiddleware";
+import { RequestIDFunction, GetterRequestID } from "../utils/http";
 
 export class UserController implements APPRouter {
 
+    private getUserID : RequestIDFunction
+
     constructor (private userModel : UserModel , private authMiddleware : AuthMiddleware   ) {
-        
+        this.getUserID = GetterRequestID('user')
     }
     setup(app : Application) {
         
@@ -34,7 +37,7 @@ export class UserController implements APPRouter {
     async getUser(req : Request , res : Response) {
             try {
                 const user = (await this.userModel.find({
-                    id : Number(req.params['user'])
+                    id : this.getUserID(req)
                 }))[0]
                 
                
@@ -84,7 +87,7 @@ export class UserController implements APPRouter {
         try {
             
             await this.userModel.update(req.body , {
-                id : Number(req.params['user'])
+                id : this.getUserID(req)
             })
             res.status(200).json({
                 message : 'User successfully updated'
