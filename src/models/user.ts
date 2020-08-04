@@ -14,7 +14,8 @@ export class UserModel implements CRUDModel<User> {
     async find(user? : Partial<User>) {
 
         
-        if (!user) {
+        if (user) {
+            
             return await this.conn.runQuery('SELECT * FROM users WHERE ? ' , user) as User[]
         }
         
